@@ -1,0 +1,25 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "A musical venue and artist booking site that facilitates the discovery and bookings of shows between local performing artists and venues",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tokoiwesley/fyyur.git"
+  },
+  "keywords": [
+    "Fyyur"
+  ],
+  "author": "Wesley Tokoi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tokoiwesley/fyyur/issues"
+  },
+  "homepage": "https://github.com/tokoiwesley/fyyur#readme",
+  "dependencies": {
+    "bootstrap": "^3.4.1"
+  }
+}
