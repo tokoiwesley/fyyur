@@ -236,32 +236,19 @@ def create_venue_form():
 def create_venue_submission():
     # TODO: modify data to be the data object returned from db insertion
     form = VenueForm(request.form)
-    name = form.name.data
-    city = form.city.data
-    state = form.state.data
-    address = form.address.data
-    phone = form.phone.data
-    genres = form.genres.data
-    image_link = form.image_link.data
-    facebook_link = form.facebook_link.data
-    website_link = form.website_link.data
-    seeking_talent = True if form.name.data else False
-    seeking_description = form.seeking_description.data
-
     venue = Venue(
-        name=name,
-        city=city,
-        state=state,
-        address=address,
-        phone=phone,
-        genres=genres[0], # todo: save multiple genres
-        image_link=image_link,
-        facebook_link=facebook_link,
-        website=website_link,
-        seeking_talent=seeking_talent,
-        seeking_description=seeking_description
+        name=form.name.data,
+        city=form.city.data,
+        state=form.state.data,
+        address=form.address.data,
+        phone=form.phone.data,
+        genres=form.genres.data[0],  # todo: save multiple genres
+        image_link=form.image_link.data,
+        facebook_link=form.facebook_link.data,
+        website=form.website_link.data,
+        seeking_talent=True if form.name.data else False,
+        seeking_description=form.seeking_description.data
     )
-
     error = False
     try:
         db.session.add(venue)
@@ -478,13 +465,38 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
+    form = ArtistForm(request.form)
+    artist = Artist(
+        name=form.name.data,
+        city=form.city.data,
+        state=form.state.data,
+        phone=form.phone.data,
+        genres=form.genres.data[0],  # todo: save multiple genres
+        image_link=form.image_link.data,
+        facebook_link=form.facebook_link.data,
+        website=form.website_link.data,
+        seeking_venue=True if form.seeking_venue.data else False,
+        seeking_description=form.seeking_description.data
+    )
+    error = False
+    try:
+        db.session.add(artist)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print(sys.exc_info())
+    finally:
+        db.session.close()
 
-    # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+    if error:
+        # on unsuccessful db insert, flash an error instead.
+        flash('An error occurred. Artist ' + artist.name + ' could not be listed.')
+    else:
+        # on successful db insert, flash success
+        flash('Artist ' + request.form['name'] + ' was successfully listed!')
+
     return render_template('pages/home.html')
 
 
