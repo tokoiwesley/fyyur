@@ -2,6 +2,7 @@
 # Imports
 # ----------------------------------------------------------------------------#
 
+import sys
 import json
 import dateutil.parser
 import babel
@@ -233,14 +234,53 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    # TODO: insert form data as a new Venue record in the db, instead
     # TODO: modify data to be the data object returned from db insertion
+    form = VenueForm(request.form)
+    name = form.name.data
+    city = form.city.data
+    state = form.state.data
+    address = form.address.data
+    phone = form.phone.data
+    genres = form.genres.data
+    image_link = form.image_link.data
+    facebook_link = form.facebook_link.data
+    website_link = form.website_link.data
+    seeking_talent = True if form.name.data else False
+    seeking_description = form.seeking_description.data
 
-    # on successful db insert, flash success
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    venue = Venue(
+        name=name,
+        city=city,
+        state=state,
+        address=address,
+        phone=phone,
+        genres=genres[0], # todo: save multiple genres
+        image_link=image_link,
+        facebook_link=facebook_link,
+        website=website_link,
+        seeking_talent=seeking_talent,
+        seeking_description=seeking_description
+    )
+
+    error = False
+    try:
+        db.session.add(venue)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+
+    if error:
+        # on unsuccessful db insert, flash an error instead.
+        # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+        flash('An error occurred. Venue ' + venue.name + ' could not be listed.')
+    else:
+        # on successful db insert, flash success
+        flash('Venue ' + request.form['name'] + ' was successfully listed!')
+
     return render_template('pages/home.html')
 
 
