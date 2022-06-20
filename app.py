@@ -243,6 +243,7 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
+    # insert form data as a new Venue record in the db
     # TODO: modify data to be the data object returned from db insertion
     form = VenueForm(request.form)
     venue = Venue(
@@ -474,6 +475,7 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
+    # insert form data as a new Artist record in the db
     # TODO: modify data to be the data object returned from db insertion
     form = ArtistForm(request.form)
     artist = Artist(
@@ -565,13 +567,32 @@ def create_shows():
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
-    # TODO: insert form data as a new Show record in the db, instead
+    # insert form data as a new Show record in the db
+    form = ShowForm()
+    error = False
+    try:
+        show = Show(
+            artist_id=form.artist_id.data,
+            venue_id=form.venue_id.data,
+            start_time=form.start_time.data
+        )
+        db.session.add(show)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print(sys.exc_info())
+    finally:
+        db.session.close()
 
-    # on successful db insert, flash success
-    flash('Show was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Show could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    if error:
+        # on unsuccessful db insert, flash an error instead.
+        # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+        flash('An error occurred. Show could not be listed.')
+    else:
+        # on successful db insert, flash success
+        flash('Show was successfully listed!')
+
     return render_template('pages/home.html')
 
 
