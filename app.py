@@ -58,6 +58,7 @@ def index():
 def venues():
     # TODO: replace with real venues data.
     #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
+
     data = [{
         "city": "San Francisco",
         "state": "CA",
@@ -79,7 +80,18 @@ def venues():
             "num_upcoming_shows": 0,
         }]
     }]
-    return render_template('pages/venues.html', areas=data);
+    # venues = Venue.query.all().distinct()
+    # for venue in venues:
+    #     data += {
+    #     "city": venue.city,
+    #     "state": venue.state,
+    #     "venues": [{
+    #         "id": 2,
+    #         "name": "The Dueling Pianos Bar",
+    #         "num_upcoming_shows": 0,
+    #     }]
+    # }
+    return render_template('pages/venues.html', areas=data)
 
 
 @app.route('/venues/search', methods=['POST'])
@@ -198,13 +210,14 @@ def create_venue_submission():
     # insert form data as a new Venue record in the db
     # TODO: modify data to be the data object returned from db insertion
     form = VenueForm(request.form)
+    genres = ','.join(form.genres.data)
     venue = Venue(
         name=form.name.data,
         city=form.city.data,
         state=form.state.data,
         address=form.address.data,
         phone=form.phone.data,
-        genres=form.genres.data[0],  # todo: save multiple genres
+        genres=genres,
         image_link=form.image_link.data,
         facebook_link=form.facebook_link.data,
         website=form.website_link.data,
@@ -430,12 +443,13 @@ def create_artist_submission():
     # insert form data as a new Artist record in the db
     # TODO: modify data to be the data object returned from db insertion
     form = ArtistForm(request.form)
+    genres = ','.join(form.genres.data)
     artist = Artist(
         name=form.name.data,
         city=form.city.data,
         state=form.state.data,
         phone=form.phone.data,
-        genres=form.genres.data[0],  # todo: save multiple genres
+        genres=genres,
         image_link=form.image_link.data,
         facebook_link=form.facebook_link.data,
         website=form.website_link.data,
